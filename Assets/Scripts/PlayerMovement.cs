@@ -5,33 +5,30 @@ using UnityEngine.InputSystem;
 
 public class PlayerMovement : MonoBehaviour
 {
-    public Rigidbody rb;
-    public float movementSpeed, jumpForce;
+    public CharacterController chController;
 
-    private bool canJump;
+    public float movementSpeed;
 
-    private void Start()
+    public float turnSmoothTime;
+    private float turnSmoothVelocity;
+
+    public Transform playerCam;
+
+    private void Update()
     {
-        canJump = true;
-    }
+        float horizontal = Input.GetAxisRaw("Horizontal");
+        float vertical = Input.GetAxisRaw("Vertical");
 
-    public void Jump()
-    {
-        if (canJump)
+        Vector3 direction = new Vector3(horizontal, 0f, vertical).normalized;
+
+        if(direction.magnitude >= 0.1f)
         {
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            canJump = false;
-        }
-    }
+            float playerRotation = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + playerCam.eulerAngles.y;
+            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, playerRotation, ref turnSmoothVelocity, turnSmoothTime);
+            transform.rotation = Quaternion.Euler(0f, angle, 0f);
 
-    private void OnCollisionEnter(Collision collision)
-    {
-        if (!canJump)
-        {
-            if (collision.collider.CompareTag("Ground"))
-            {
-                canJump = true;
-            }
+            Vector3 movementDirection = Quaternion.Euler(0f, playerRotation, 0f) * Vector3.forward;
+            chController.Move(movementDirection.normalized * movementSpeed * Time.deltaTime);
         }
     }
 }
