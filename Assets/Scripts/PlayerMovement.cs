@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     private float moveSpeed;
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
+    [SerializeField] private float jumpSpeed;
 
     private Vector3 moveDirection;
     private Vector3 velocity;
@@ -18,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpHeight;
 
     private CharacterController charController;
+    //private Rigidbody rb;
 
     private float turnSmoothTime = 0.1f;
     private float turnSmoothVelocity;
@@ -27,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         charController = GetComponent<CharacterController>();
+        //rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -44,35 +47,40 @@ public class PlayerMovement : MonoBehaviour
         }
         
         float vertical = Input.GetAxis("Vertical");
-        float horizontal = Input.GetAxis("Horizontal");
+        //float horizontal = Input.GetAxis("Horizontal");
 
-        moveDirection = new Vector3(horizontal, 0, vertical);
+        moveDirection = new Vector3(0, 0, vertical);
+        moveDirection = transform.TransformDirection(moveDirection);
 
         if (isGrounded)
         {
-            //ANDANDO
-            if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift))
-            {
-                Walk();
-            }
-            //CORRENDO
-            if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift))
-            {
-                Run();
-            }
-            //PARADO
-            if (moveDirection == Vector3.zero)
-            {
-                Idle();
-            }
-
-            moveDirection *= moveSpeed;
-
             if (Input.GetKeyDown(KeyCode.Space))
             {
                 Jump();
             }
         }
+        else
+        {
+            moveSpeed = jumpSpeed;
+        }
+
+        //ANDANDO
+        if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift))
+        {
+            Walk();
+        }
+        //CORRENDO
+        if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift))
+        {
+            Run();
+        }
+        //PARADO
+        if (moveDirection == Vector3.zero)
+        {
+            Idle();
+        }
+
+        moveDirection *= moveSpeed;
 
         velocity.y += gravity * Time.deltaTime;
         charController.Move(velocity * Time.deltaTime);
@@ -89,12 +97,18 @@ public class PlayerMovement : MonoBehaviour
 
     private void Walk()
     {
-        moveSpeed = walkSpeed;
+        if (isGrounded)
+        {
+            moveSpeed = walkSpeed;
+        }
         Debug.Log("Walking");
     }
     private void Run()
     {
-        moveSpeed = runSpeed;
+        if (isGrounded)
+        {
+            moveSpeed = runSpeed;
+        }
         Debug.Log("Running");
     }
     private void Idle()
@@ -105,6 +119,7 @@ public class PlayerMovement : MonoBehaviour
     private void Jump()
     {
         velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+        //rb.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
         Debug.Log("Jumped");
     }
 }
