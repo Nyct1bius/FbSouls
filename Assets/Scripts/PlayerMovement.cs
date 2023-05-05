@@ -19,7 +19,6 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float jumpHeight;
 
     private CharacterController charController;
-    //private Rigidbody rb;
 
     private float turnSmoothTime = 0.1f;
     private float turnSmoothVelocity;
@@ -29,7 +28,6 @@ public class PlayerMovement : MonoBehaviour
     private void Start()
     {
         charController = GetComponent<CharacterController>();
-        //rb = GetComponent<Rigidbody>();
     }
 
     private void Update()
@@ -47,10 +45,9 @@ public class PlayerMovement : MonoBehaviour
         }
         
         float vertical = Input.GetAxis("Vertical");
-        //float horizontal = Input.GetAxis("Horizontal");
+        float horizontal = Input.GetAxis("Horizontal");
 
-        moveDirection = new Vector3(0, 0, vertical);
-        moveDirection = transform.TransformDirection(moveDirection);
+        moveDirection = new Vector3(horizontal, 0, vertical);
 
         if (isGrounded)
         {
@@ -80,18 +77,19 @@ public class PlayerMovement : MonoBehaviour
             Idle();
         }
 
-        moveDirection *= moveSpeed;
-
-        velocity.y += gravity * Time.deltaTime;
-        charController.Move(velocity * Time.deltaTime);
-
         if (moveDirection.magnitude >= 0.1f)
         {
-            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg;
+            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + playerCam.eulerAngles.y;
             float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
             transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+            moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
         }
 
+        moveDirection *= moveSpeed;
+        velocity.y += gravity * Time.deltaTime;
+
+        charController.Move(velocity * Time.deltaTime);
         charController.Move(moveDirection * Time.deltaTime);
     }
 
@@ -101,7 +99,6 @@ public class PlayerMovement : MonoBehaviour
         {
             moveSpeed = walkSpeed;
         }
-        Debug.Log("Walking");
     }
     private void Run()
     {
@@ -109,17 +106,14 @@ public class PlayerMovement : MonoBehaviour
         {
             moveSpeed = runSpeed;
         }
-        Debug.Log("Running");
     }
     private void Idle()
     {
-        Debug.Log("Idle");
+
     }
 
     private void Jump()
     {
         velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
-        //rb.AddForce(transform.up * jumpHeight, ForceMode.Impulse);
-        Debug.Log("Jumped");
     }
 }
