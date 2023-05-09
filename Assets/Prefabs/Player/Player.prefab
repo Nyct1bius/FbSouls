@@ -82,14 +82,16 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   walkSpeed: 5
   runSpeed: 9
-  jumpSpeed: 11.5
+  jumpSpeed: 7
+  runJumpSpeed: 12
   isGrounded: 0
   groundCheckDistance: 1.1
   groundMask:
     serializedVersion: 2
     m_Bits: 64
   gravity: -9.81
-  jumpHeight: 1.5
+  jumpHeight: 3
+  runJumpHeight: 2
   playerCam: {fileID: 0}
 --- !u!1 &2056443969510658825
 GameObject:
