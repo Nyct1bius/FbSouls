@@ -8,6 +8,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float walkSpeed;
     [SerializeField] private float runSpeed;
     [SerializeField] private float jumpSpeed;
+    [SerializeField] private float runJumpSpeed;
 
     private Vector3 moveDirection;
     private Vector3 velocity;
@@ -17,11 +18,14 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private LayerMask groundMask;
     [SerializeField] private float gravity;
     [SerializeField] private float jumpHeight;
+    [SerializeField] private float runJumpHeight;
 
     private CharacterController charController;
 
     private float turnSmoothTime = 0.1f;
     private float turnSmoothVelocity;
+
+    private bool isRunning;
 
     [SerializeField] private Transform playerCam;
 
@@ -58,7 +62,14 @@ public class PlayerMovement : MonoBehaviour
         }
         else
         {
-            moveSpeed = jumpSpeed;
+            if (isRunning)
+            {
+                moveSpeed = runJumpSpeed;
+            }
+            else
+            {
+                moveSpeed = jumpSpeed;
+            }
         }
 
         //ANDANDO
@@ -99,6 +110,7 @@ public class PlayerMovement : MonoBehaviour
         {
             moveSpeed = walkSpeed;
         }
+        isRunning = false;
     }
     private void Run()
     {
@@ -106,14 +118,22 @@ public class PlayerMovement : MonoBehaviour
         {
             moveSpeed = runSpeed;
         }
+        isRunning = true;
     }
     private void Idle()
     {
-
+        isRunning = false;
     }
 
     private void Jump()
     {
-        velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+        if (isRunning)
+        {
+            velocity.y = Mathf.Sqrt(runJumpHeight * -2 * gravity);
+        }
+        else
+        {
+            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+        }
     }
 }
