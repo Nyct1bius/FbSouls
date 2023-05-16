@@ -6,12 +6,12 @@ TerrainLayer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: AreiaLayer
-  m_DiffuseTexture: {fileID: 2800000, guid: 9eed22310e4a3ee45938d07d9ca89397, type: 3}
+  m_Name: NewLayer
+  m_DiffuseTexture: {fileID: 2800000, guid: eb00ac3fb077e244ab43a720da7ccadd, type: 3}
   m_NormalMapTexture: {fileID: 0}
   m_MaskMapTexture: {fileID: 0}
   m_TileSize: {x: 10, y: 10}
-  m_TileOffset: {x: 0, y: 0}
+  m_TileOffset: {x: 5, y: 5}
   m_Specular: {r: 0, g: 0, b: 0, a: 0}
   m_Metallic: 0
   m_Smoothness: 0
