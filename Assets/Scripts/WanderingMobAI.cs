@@ -9,42 +9,22 @@ public class WanderingMobAI : MonoBehaviour
     
     private NavMeshAgent agent;
 
-    private Transform player;
+    [SerializeField] private LayerMask groundMask;
 
-    [SerializeField] private LayerMask groundMask, playerMask;
-
-    private Vector3 waypoint, boltWaypoint;
-    private bool waypointSet, boltWaypointSet;
+    private Vector3 waypoint;
+    private bool waypointSet;
     [SerializeField] private float waypointRadius;
-
-    [SerializeField] private float agroRange;
-    private bool playerInAgroRange, isBolting;
     
     // Start is called before the first frame update
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     // Update is called once per frame
     void Update()
-    {
-        playerInAgroRange = Physics.CheckSphere(transform.position, waypointRadius, playerMask);
-
-        if (!playerInAgroRange && !isBolting)
-        {
-            Patrolling();
-        }
-        if (playerInAgroRange)
-        {
-            isBolting = true;
-
-            if (isBolting)
-            {
-                Bolting();
-            }
-        }
+    {        
+        Patrolling();
     }
 
     private void Patrolling()
@@ -77,30 +57,6 @@ public class WanderingMobAI : MonoBehaviour
         {
             waypointSet = true; 
         }
-    }
-
-    private void Bolting()
-    {
-        if (!boltWaypointSet)
-        {
-            FindBoltWaypoint();
-        }
-        else
-        {
-            agent.SetDestination(boltWaypoint); 
-        }
-
-        Vector3 distanceToBoltWaypoint = transform.position - waypoint;
-
-        if (distanceToBoltWaypoint.magnitude <= 1f)
-        {
-            isBolting = false;
-        }
-    }
-
-    private void FindBoltWaypoint()
-    {
-        boltWaypoint = new Vector3(transform.position.x - player.position.x, transform.position.y, transform.position.z - player.position.z);
     }
 
     public void TakeDamge(int damage)
