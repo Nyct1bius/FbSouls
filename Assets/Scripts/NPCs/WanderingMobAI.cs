@@ -5,6 +5,14 @@ using UnityEngine.AI;
 
 public class WanderingMobAI : MonoBehaviour
 {
+    private enum State
+    {
+        Wandering,
+        Dead
+    }
+
+    private State state;
+    
     public float health;
     
     private NavMeshAgent agent;
@@ -14,7 +22,12 @@ public class WanderingMobAI : MonoBehaviour
     private Vector3 waypoint;
     private bool waypointSet;
     [SerializeField] private float waypointRadius;
-    
+
+    private void Awake()
+    {
+        state = State.Wandering;
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -24,7 +37,16 @@ public class WanderingMobAI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {        
-        Patrolling();
+        switch(state)
+        {
+            case State.Wandering:
+                Patrolling();
+                break;
+
+            case State.Dead:
+                Destroy(gameObject);
+                break;
+        }
     }
 
     private void Patrolling()
@@ -65,7 +87,7 @@ public class WanderingMobAI : MonoBehaviour
 
         if (health <= 0)
         {
-            Destroy(gameObject);
+            state = State.Dead;
         }
     }
 }
