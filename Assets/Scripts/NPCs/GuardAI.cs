@@ -63,7 +63,7 @@ public class GuardAI : MonoBehaviour
                 combatTarget = new Vector3(player.position.x, player.position.y, player.position.z);
                 self = new Vector3(transform.position.x, transform.position.y, transform.position.z);
 
-                if (Vector3.Distance(transform.position, player.position) >= 6f)
+                if (Vector3.Distance(transform.position, player.position) >= 3f)
                 {                   
                     agent.SetDestination(combatTarget);
                     Debug.Log("Move");
@@ -72,6 +72,11 @@ public class GuardAI : MonoBehaviour
                 {
                     agent.SetDestination(self);
                     Debug.Log("Stop");
+                }
+
+                if (Vector3.Distance(transform.position, player.position) > 20 && health > 0)
+                {
+                    state = State.Patrolling;
                 }
                 break;
 
@@ -111,20 +116,13 @@ public class GuardAI : MonoBehaviour
         {
             state = State.Dead;
         }
+
+        state = State.Attacking;
     }
 
     //STATES
     private void SwitchState()
     {
-        if (Vector3.Distance(transform.position, player.position) <= 20f)
-        {
-            state = State.Attacking;
-        }
-        else
-        {
-            state = State.Patrolling;
-        }
-
         if (health <= 0)
         {
             state = State.Dead;
