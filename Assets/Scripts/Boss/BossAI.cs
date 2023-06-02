@@ -21,6 +21,7 @@ public class BossAI : MonoBehaviour
 
     private NavMeshAgent agent;
     private Vector3 self;
+    private Animator anim;
 
     private Transform player;
     private Vector3 combatTarget;
@@ -39,6 +40,8 @@ public class BossAI : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
 
+        //anim = GetComponent<Animator>();
+
         player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
@@ -48,6 +51,11 @@ public class BossAI : MonoBehaviour
         switch (state)
         {
             case State.firstPhase:
+                if (Vector3.Distance(transform.position, player.position) <= 5f)
+                {
+                    //anim.SetTrigger("Melee");
+                }
+                
                 if (health <= 400)
                 {
                     state = State.secondPhase;
