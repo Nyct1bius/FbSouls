@@ -20,8 +20,6 @@ public class MeleeEnemyAI : MonoBehaviour
 
     private Vector3 self;
 
-    private Rigidbody rb;
-
     private Transform player;
     private Vector3 combatTarget;
 
@@ -38,8 +36,6 @@ public class MeleeEnemyAI : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-
-        rb = GetComponent<Rigidbody>();
 
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
@@ -66,12 +62,10 @@ public class MeleeEnemyAI : MonoBehaviour
                 if (Vector3.Distance(transform.position, player.position) >= 3f)
                 {
                     agent.SetDestination(combatTarget);
-                    Debug.Log("Move");
                 }
                 else
                 {
                     agent.SetDestination(self);
-                    Debug.Log("Stop");
                 }
                 break;
 
@@ -123,11 +117,6 @@ public class MeleeEnemyAI : MonoBehaviour
         if (Vector3.Distance(transform.position, player.position) > 20f && health > 0)
         {
             state = State.Patrolling;
-        }
-
-        if (health <= 0)
-        {
-            state = State.Dead;
         }
     }
 }

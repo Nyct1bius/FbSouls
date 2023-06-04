@@ -20,8 +20,6 @@ public class GuardAI : MonoBehaviour
 
     private Vector3 self;
 
-    private Rigidbody rb;
-
     private Transform player;
     private Vector3 combatTarget;
 
@@ -38,8 +36,6 @@ public class GuardAI : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-
-        rb = GetComponent<Rigidbody>();
 
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
@@ -66,12 +62,10 @@ public class GuardAI : MonoBehaviour
                 if (Vector3.Distance(transform.position, player.position) >= 3f)
                 {                   
                     agent.SetDestination(combatTarget);
-                    Debug.Log("Move");
                 }
                 else
                 {
                     agent.SetDestination(self);
-                    Debug.Log("Stop");
                 }
 
                 if (Vector3.Distance(transform.position, player.position) > 20 && health > 0)
@@ -84,8 +78,6 @@ public class GuardAI : MonoBehaviour
                 Destroy(gameObject);
                 break;
         }
-
-        SwitchState();
     }
 
     //PATROLLING
@@ -116,16 +108,9 @@ public class GuardAI : MonoBehaviour
         {
             state = State.Dead;
         }
-
-        state = State.Attacking;
-    }
-
-    //STATES
-    private void SwitchState()
-    {
-        if (health <= 0)
+        else
         {
-            state = State.Dead;
+            state = State.Attacking;
         }
     }
 }
