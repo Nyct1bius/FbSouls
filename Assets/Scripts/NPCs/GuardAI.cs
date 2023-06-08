@@ -17,7 +17,6 @@ public class GuardAI : MonoBehaviour
     public float health;
 
     private NavMeshAgent agent;
-
     private Vector3 self;
 
     private Transform player;
@@ -25,7 +24,9 @@ public class GuardAI : MonoBehaviour
 
     [SerializeField] private Transform[] waypoints;
     private int waypointIndex;
-    private Vector3 target;
+    private Vector3 targetWaypoint;
+
+    private bool isAttacking;
 
     private void Awake()
     {
@@ -40,6 +41,8 @@ public class GuardAI : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
         FindNewWaypoint();
+
+        isAttacking = false;
     }
 
     // Update is called once per frame
@@ -48,7 +51,7 @@ public class GuardAI : MonoBehaviour
         switch (state)
         {
             case State.Patrolling:
-                if (Vector3.Distance(transform.position, target) <= 1.5f)
+                if (Vector3.Distance(transform.position, targetWaypoint) <= 1.5f)
                 {
                     IterateWaypointIndex();
                     FindNewWaypoint();
@@ -56,20 +59,20 @@ public class GuardAI : MonoBehaviour
                 break;
 
             case State.Attacking:
-                combatTarget = new Vector3(player.position.x, player.position.y, player.position.z);
-                self = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-
                 if (Vector3.Distance(transform.position, player.position) >= 3f)
-                {                   
+                {
+                    combatTarget = new Vector3(player.position.x, player.position.y, player.position.z);
                     agent.SetDestination(combatTarget);
                 }
                 else
                 {
+                    self = new Vector3(transform.position.x, transform.position.y, transform.position.z);
                     agent.SetDestination(self);
                 }
 
-                if (Vector3.Distance(transform.position, player.position) > 20 && health > 0)
+                if (Vector3.Distance(transform.position, player.position) > 30 && health > 0)
                 {
+                    isAttacking = false;
                     state = State.Patrolling;
                 }
                 break;
@@ -83,8 +86,8 @@ public class GuardAI : MonoBehaviour
     //PATROLLING
     private void FindNewWaypoint()
     {
-        target = waypoints[waypointIndex].position;
-        agent.SetDestination(target);
+        targetWaypoint = waypoints[waypointIndex].position;
+        agent.SetDestination(targetWaypoint);
     }
 
     private void IterateWaypointIndex()
@@ -108,8 +111,9 @@ public class GuardAI : MonoBehaviour
         {
             state = State.Dead;
         }
-        else
+        if (health > 0 && !isAttacking)
         {
+            isAttacking = true;
             state = State.Attacking;
         }
     }

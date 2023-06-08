@@ -17,7 +17,6 @@ public class MeleeEnemyAI : MonoBehaviour
     public float health;
 
     private NavMeshAgent agent;
-
     private Vector3 self;
 
     private Transform player;
@@ -25,7 +24,7 @@ public class MeleeEnemyAI : MonoBehaviour
 
     [SerializeField] private Transform[] waypoints;
     private int waypointIndex;
-    private Vector3 target;
+    private Vector3 targetWaypoint;
 
     private void Awake()
     {
@@ -48,7 +47,7 @@ public class MeleeEnemyAI : MonoBehaviour
         switch (state)
         {
             case State.Patrolling:
-                if (Vector3.Distance(transform.position, target) <= 1.5f)
+                if (Vector3.Distance(transform.position, targetWaypoint) <= 1.5f)
                 {
                     IterateWaypointIndex();
                     FindNewWaypoint();
@@ -56,15 +55,14 @@ public class MeleeEnemyAI : MonoBehaviour
                 break;
 
             case State.Attacking:
-                combatTarget = new Vector3(player.position.x, player.position.y, player.position.z);
-                self = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-
                 if (Vector3.Distance(transform.position, player.position) >= 3f)
                 {
+                    combatTarget = new Vector3(player.position.x, player.position.y, player.position.z);
                     agent.SetDestination(combatTarget);
                 }
                 else
                 {
+                    self = new Vector3(transform.position.x, transform.position.y, transform.position.z);
                     agent.SetDestination(self);
                 }
                 break;
@@ -80,8 +78,8 @@ public class MeleeEnemyAI : MonoBehaviour
     //PATROLLING
     private void FindNewWaypoint()
     {
-        target = waypoints[waypointIndex].position;
-        agent.SetDestination(target);
+        targetWaypoint = waypoints[waypointIndex].position;
+        agent.SetDestination(targetWaypoint);
     }
 
     private void IterateWaypointIndex()

@@ -17,7 +17,6 @@ public class RangedEnemyAI : MonoBehaviour
     public float health;
 
     private NavMeshAgent agent;
-
     private Vector3 self;
 
     private Transform player;
@@ -25,7 +24,7 @@ public class RangedEnemyAI : MonoBehaviour
 
     [SerializeField] private Transform[] waypoints;
     private int waypointIndex;
-    private Vector3 target;
+    private Vector3 targetWaypoint;
 
     private void Awake()
     {
@@ -49,7 +48,6 @@ public class RangedEnemyAI : MonoBehaviour
         {
             case State.Idle:
                 self = new Vector3(transform.position.x, transform.position.y, transform.position.z);
-
                 agent.SetDestination(self);
 
                 if (Vector3.Distance(transform.position, player.position) <= 20f && health > 0)
@@ -59,15 +57,15 @@ public class RangedEnemyAI : MonoBehaviour
                 break;
 
             case State.Shooting:
-                target = waypoints[waypointIndex].position;
-                agent.SetDestination(target);
+                targetWaypoint = waypoints[waypointIndex].position;
+                agent.SetDestination(targetWaypoint);
 
-                if (Vector3.Distance(transform.position, target) <= 1.5f)
+                if (Vector3.Distance(transform.position, targetWaypoint) <= 1.5f)
                 {
                     waypointIndex = Random.Range(0, waypoints.Length);
                 }
 
-                if(Vector3.Distance(transform.position, player.position) > 40f)
+                if(Vector3.Distance(transform.position, player.position) > 40f && health > 0)
                 {
                     state = State.Idle;
                 }
