@@ -26,6 +26,8 @@ public class MeleeEnemyAI : MonoBehaviour
     private int waypointIndex;
     private Vector3 targetWaypoint;
 
+    private Animator anim;
+
     private void Awake()
     {
         state = State.Patrolling;
@@ -39,6 +41,8 @@ public class MeleeEnemyAI : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
         FindNewWaypoint();
+
+        anim = GetComponentInChildren<Animator>();
     }
 
     // Update is called once per frame
@@ -51,10 +55,20 @@ public class MeleeEnemyAI : MonoBehaviour
                 {
                     IterateWaypointIndex();
                     FindNewWaypoint();
+
+                    anim.SetBool("Idle", false);
+                    anim.SetBool("Walk", true);
+                    anim.SetBool("Run", false);
+                    anim.SetBool("Dead", false);
                 }
                 break;
 
             case State.Attacking:
+                anim.SetBool("Idle", true);
+                anim.SetBool("Walk", false);
+                anim.SetBool("Run", false);
+                anim.SetBool("Dead", false);
+
                 if (Vector3.Distance(transform.position, player.position) >= 3f)
                 {
                     combatTarget = new Vector3(player.position.x, player.position.y, player.position.z);

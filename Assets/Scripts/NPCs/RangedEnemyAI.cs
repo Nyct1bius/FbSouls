@@ -26,6 +26,10 @@ public class RangedEnemyAI : MonoBehaviour
     private int waypointIndex;
     private Vector3 targetWaypoint;
 
+    private Animator anim;
+
+    private float timeBTWAttacks;
+
     private void Awake()
     {
         state = State.Idle;
@@ -39,6 +43,10 @@ public class RangedEnemyAI : MonoBehaviour
         player = GameObject.FindGameObjectWithTag("Player").transform;
 
         waypointIndex = Random.Range(0, waypoints.Length);
+
+        anim = GetComponentInChildren<Animator>();
+
+        timeBTWAttacks = 1.7f;
     }
 
     // Update is called once per frame
@@ -50,6 +58,11 @@ public class RangedEnemyAI : MonoBehaviour
                 self = new Vector3(transform.position.x, transform.position.y, transform.position.z);
                 agent.SetDestination(self);
 
+                anim.SetBool("Idle", true);
+                anim.SetBool("CombatIdle", false);
+                anim.SetBool("Move", false);
+                anim.SetBool("Dead", false);
+
                 if (Vector3.Distance(transform.position, player.position) <= 20f && health > 0)
                 {
                     state = State.Shooting;
@@ -59,6 +72,19 @@ public class RangedEnemyAI : MonoBehaviour
             case State.Shooting:
                 targetWaypoint = waypoints[waypointIndex].position;
                 agent.SetDestination(targetWaypoint);
+
+                anim.SetBool("Idle", false);
+                anim.SetBool("CombatIdle", true);
+                anim.SetBool("Move", false);
+                anim.SetBool("Dead", false);
+
+                timeBTWAttacks -= Time.deltaTime;
+
+                if (timeBTWAttacks <= 0)
+                {
+                    anim.SetTrigger("Ranged");
+                    timeBTWAttacks = 1.7f;
+                }
 
                 if (Vector3.Distance(transform.position, targetWaypoint) <= 1.5f)
                 {
@@ -72,7 +98,10 @@ public class RangedEnemyAI : MonoBehaviour
                 break;
 
             case State.Dead:
-                Destroy(gameObject);
+                anim.SetBool("Idle", false);
+                anim.SetBool("CombatIdle", false);
+                anim.SetBool("Move", false);
+                anim.SetBool("Dead", true);
                 break;
         }
     }
@@ -81,6 +110,8 @@ public class RangedEnemyAI : MonoBehaviour
     public void TakeDamge(int damage)
     {
         health -= damage;
+
+        anim.SetTrigger("Hit");
 
         if (health <= 0)
         {
