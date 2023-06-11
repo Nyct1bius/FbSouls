@@ -6,16 +6,16 @@ TerrainLayer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Terra2
-  m_DiffuseTexture: {fileID: 2800000, guid: f4c5c5b2e1a05f242a83a886af9d4c94, type: 3}
-  m_NormalMapTexture: {fileID: 2800000, guid: e0643d222991fa94db70ae7c1c82256e, type: 3}
+  m_Name: PedraLayer2
+  m_DiffuseTexture: {fileID: 2800000, guid: d3829afcd8c9d974b98444a597ad8c92, type: 3}
+  m_NormalMapTexture: {fileID: 2800000, guid: 55f0b1446aacbed4eae63f042683a82d, type: 3}
   m_MaskMapTexture: {fileID: 0}
-  m_TileSize: {x: 20, y: 20}
-  m_TileOffset: {x: 10, y: 10}
+  m_TileSize: {x: 25, y: 25}
+  m_TileOffset: {x: 12.5, y: 12.5}
   m_Specular: {r: 0, g: 0, b: 0, a: 0}
   m_Metallic: 0
   m_Smoothness: 0
-  m_NormalScale: 0.7
+  m_NormalScale: 1
   m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
   m_DiffuseRemapMax: {x: 1, y: 1, z: 1, w: 1}
   m_MaskMapRemapMin: {x: 0, y: 0, z: 0, w: 0}
