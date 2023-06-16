@@ -29,9 +29,17 @@ public class PlayerMovement : MonoBehaviour
 
     [SerializeField] private Transform playerCam;
 
+    [SerializeField] private Animator anim;
+
+    [SerializeField] private GameObject meleeHitbox;
+
+    private bool isAttacking;
+
     private void Start()
     {
-        charController = GetComponent<CharacterController>();
+        charController = GetComponentInParent<CharacterController>();
+
+        anim = GetComponent<Animator>();  
     }
 
     private void Update()
@@ -57,7 +65,16 @@ public class PlayerMovement : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.Space))
             {
-                Jump();
+                if (isRunning)
+                {
+                    velocity.y = Mathf.Sqrt(runJumpHeight * -2 * gravity);
+                }
+                else
+                {
+                    velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
+                }
+
+                anim.SetTrigger("Jump");
             }
         }
         else
@@ -73,67 +90,78 @@ public class PlayerMovement : MonoBehaviour
         }
 
         //ANDANDO
-        if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift))
+        if (!isAttacking)
         {
-            Walk();
-        }
-        //CORRENDO
-        if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift))
-        {
-            Run();
-        }
-        //PARADO
-        if (moveDirection == Vector3.zero)
-        {
-            Idle();
+            if (moveDirection != Vector3.zero && !Input.GetKey(KeyCode.LeftShift))
+            {
+                if (isGrounded)
+                {
+                    moveSpeed = walkSpeed;
+
+                    anim.SetBool("Idle", false);
+                    anim.SetBool("Walking", true);
+                    anim.SetBool("Running", false);
+                    anim.SetBool("Dead", false);
+                }
+                isRunning = false;
+            }
+            //CORRENDO
+            if (moveDirection != Vector3.zero && Input.GetKey(KeyCode.LeftShift))
+            {
+                if (isGrounded)
+                {
+                    moveSpeed = runSpeed;
+
+                    anim.SetBool("Idle", false);
+                    anim.SetBool("Walking", false);
+                    anim.SetBool("Running", true);
+                    anim.SetBool("Dead", false);
+                }
+                isRunning = true;
+            }
+            //PARADO
+            if (moveDirection == Vector3.zero)
+            {
+                isRunning = false;
+            }
+
+            if (moveDirection.magnitude >= 0.1f)
+            {
+                float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + playerCam.eulerAngles.y;
+                float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
+                transform.rotation = Quaternion.Euler(0f, angle, 0f);
+
+                moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            }
+            else
+            {
+                anim.SetBool("Idle", true);
+                anim.SetBool("Walking", false);
+                anim.SetBool("Running", false);
+                anim.SetBool("Dead", false);
+            }
+
+            moveDirection *= moveSpeed;
+            velocity.y += gravity * Time.deltaTime;
+
+            charController.Move(velocity * Time.deltaTime);
+            charController.Move(moveDirection * Time.deltaTime);
         }
 
-        if (moveDirection.magnitude >= 0.1f)
+        if (isGrounded && Input.GetButtonDown("Fire1"))
         {
-            float targetAngle = Mathf.Atan2(moveDirection.x, moveDirection.z) * Mathf.Rad2Deg + playerCam.eulerAngles.y;
-            float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-            transform.rotation = Quaternion.Euler(0f, angle, 0f);
-
-            moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
+            isAttacking = true;
+            anim.SetTrigger("Melee");
         }
-
-        moveDirection *= moveSpeed;
-        velocity.y += gravity * Time.deltaTime;
-
-        charController.Move(velocity * Time.deltaTime);
-        charController.Move(moveDirection * Time.deltaTime);
     }
 
-    private void Walk()
+    public void MeleeHitboxOn()
     {
-        if (isGrounded)
-        {
-            moveSpeed = walkSpeed;
-        }
-        isRunning = false;
+        meleeHitbox.SetActive(true);
     }
-    private void Run()
+    public void MeleeHitboxOff()
     {
-        if (isGrounded)
-        {
-            moveSpeed = runSpeed;
-        }
-        isRunning = true;
-    }
-    private void Idle()
-    {
-        isRunning = false;
-    }
-
-    private void Jump()
-    {
-        if (isRunning)
-        {
-            velocity.y = Mathf.Sqrt(runJumpHeight * -2 * gravity);
-        }
-        else
-        {
-            velocity.y = Mathf.Sqrt(jumpHeight * -2 * gravity);
-        }
+        meleeHitbox.SetActive(false);
+        isAttacking = false;
     }
 }

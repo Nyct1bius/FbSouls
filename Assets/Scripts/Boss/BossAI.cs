@@ -48,7 +48,7 @@ public class BossAI : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        agent = GetComponent<NavMeshAgent>();
+        agent = GetComponentInParent<NavMeshAgent>();
 
         anim = GetComponent<Animator>();
 
